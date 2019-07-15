@@ -3,33 +3,44 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 let trainData = require('./Data.json');
 let url = 'https://api.noopschallenge.com';
-
-const network = new brain.recurrent.LSTM();
+let input;
+const config = {
+    hiddenLayers: [30,30],
+};
+const network = new brain.recurrent.LSTM(config);
 
 let testData = trainData[trainData.length - 1];
 trainData.pop();
-
 let slicedData = trainData.slice(0,1);
+input = testData.input;
 
-network.train([{input:"hell", output:"lleh"}]);
-const output = network.run('eh'); 
+network.train(trainData);
+//network.fromJSON(loadFile('network2020'));
+const output = network.run(input);
 
-console.log("INPUT: ", testData.input);
+//trubleshoot
+//network.train([{input:'OLLEH',output:'HELLO'},{input:'EREHT',output:'THERE'},{input:'EREHT OLLEH',output:'HELLO THERE'}]);
+//network.fromJSON(loadFile('network'));
+//const output = network.run("OLLEH EREHT"); 
+
+console.log("INPUT: ", input);
 console.log("OUTPUT: ", testData.output);
 console.log("AI-Chan: ", output);
 
-function saveFile(){
-    fs.writeFile("network.json", JSON.stringify(network.toJSON()), function(err) {
+saveNetwork(network);
+
+function saveNetwork(network){
+    fs.writeFileSync(__dirname+"/network.json", JSON.stringify(network.toJSON()), function(err) {
         if(err)
             return console.log(err);
 
-        console.log("The file was saved!");
+        console.log("The Network was saved!");
         //loadFile()
     });
 }
 
-function loadFile(){
-    return obj = JSON.parse(fs.readFileSync('network.json', 'utf8'));
+function loadFile(NetName){
+    return JsonNet = JSON.parse(fs.readFileSync(__dirname+`/${NetName}.json`, 'utf8'));
 }
 
 //main(); 
@@ -50,7 +61,7 @@ async function main(){
         
     }
 
-    fs.writeFile("H:/TESSST/BrainLab/Data.json",JSON.stringify(storedData),()=>{console.log("Write to File Done to ", __dirname);});
+    fs.writeFile(__dirname+"/Data.json",JSON.stringify(storedData),()=>{console.log("Write to File Done to ", __dirname);});
 }
 
 
