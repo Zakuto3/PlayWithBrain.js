@@ -4,9 +4,23 @@ const fs = require('fs');
 let trainData = require('./Data.json');
 let url = 'https://api.noopschallenge.com';
 let input;
+
 const config = {
-    hiddenLayers: [30,30],
+    hiddenLayers: [20,20],
 };
+
+const trainconfig ={
+    iterations: 50000,      // default 20000 the maximum times to iterate the training data --> number greater than 0
+    errorThresh: 0.010,   //0.005 the acceptable error percentage from training data --> number between 0 and 1
+    log: true,           // true to use console.log, when a function is supplied it is used --> Either true or a function
+    logPeriod: 10,        // iterations between logging out --> number greater than 0
+    learningRate: 0.3,    // scales with delta to effect training rate --> number between 0 and 1
+    momentum: 0.1,        // scales with next layer's change value --> number between 0 and 1
+    callback: null,       // a periodic call back that can be triggered while training --> null or function
+    callbackPeriod: 10,   // the number of iterations through the training data between callback calls --> number greater than 0
+    timeout: Infinity 
+};
+
 const network = new brain.recurrent.LSTM(config);
 
 let testData = trainData[trainData.length - 1];
@@ -14,14 +28,16 @@ trainData.pop();
 let slicedData = trainData.slice(0,1);
 input = testData.input;
 
-network.train(trainData);
+//Megistos, Ramses, Reida, Jin, Zangetsu, Neica 
+
+network.train(trainData, trainconfig);
 //network.fromJSON(loadFile('network2020'));
 const output = network.run(input);
 
 //trubleshoot
-//network.train([{input:'OLLEH',output:'HELLO'},{input:'EREHT',output:'THERE'},{input:'EREHT OLLEH',output:'HELLO THERE'}]);
+//network.train([{input:'OL',output:'LO'},{input:'OLE',output:'ELO'}]);
 //network.fromJSON(loadFile('network'));
-//const output = network.run("OLLEH EREHT"); 
+//const output = network.run("OL"); 
 
 console.log("INPUT: ", input);
 console.log("OUTPUT: ", testData.output);
